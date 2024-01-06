@@ -4,23 +4,22 @@ all: help
 
 # Initialize the repository for development
 init: install-gofumpt install-golangci-lint install-precommit
+ifeq (,$(wildcard .git/hooks/pre-commit))
 	pre-commit install
+endif
 
-# Install gofumpt if it is not installed
 install-gofumpt:
 ifeq (, $(shell which golangci-lint))
 	echo "Installing gofumpt..."
 	go install mvdan.cc/gofumpt@latest
 endif
 
-# Install pre-commit if it is not installed
 install-pre-commit:
 ifeq (, $(shell which golangci-lint))
 	echo "Installing pre-commit..."
 	python3 -m pip install pre-commit
 endif
 
-# Install golangci-lint if it is not installed
 install-golangci-lint:
 ifeq (, $(shell which golangci-lint))
 	echo "Installing golangci-lint..."
