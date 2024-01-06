@@ -20,6 +20,10 @@ endif
 ci: init
 	go mod tidy -v
 
+# Run linter
+lint:
+	golangci-lint run ./...
+
 # Run application
 run:
 	air
