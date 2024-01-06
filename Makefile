@@ -1,12 +1,23 @@
-.PHONY: init install-golangci-lint ci run help
+.PHONY: init install-gofumpt install-golangci-lint install-precommit ci run help
 
 all: help
 
 # Initialize the repository for development
-init: install-golangci-lint
+init: install-gofumpt install-golangci-lint install-precommit
+	pre-commit install
+
+# Install gofumpt if it is not installed
+install-gofumpt:
 ifeq (, $(shell which golangci-lint))
-	echo "Installing goimports..."
-	go install golang.org/x/tools/cmd/goimports@latest
+	echo "Installing gofumpt..."
+	go install mvdan.cc/gofumpt@latest
+endif
+
+# Install pre-commit if it is not installed
+install-pre-commit:
+ifeq (, $(shell which golangci-lint))
+	echo "Installing pre-commit..."
+	python3 -m pip install pre-commit
 endif
 
 # Install golangci-lint if it is not installed
