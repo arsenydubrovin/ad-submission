@@ -1,12 +1,28 @@
+.PHONY: init install-golangci-lint ci run help
+
 all: help
+
+# Initialize the repository for development
+init: install-golangci-lint
+ifeq (, $(shell which golangci-lint))
+	echo "Installing goimports..."
+	go install golang.org/x/tools/cmd/goimports@latest
+endif
+
+# Install golangci-lint if it is not installed
+install-golangci-lint:
+ifeq (, $(shell which golangci-lint))
+	echo "Installing golangci-lint..."
+	$(shell curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin v1.55.2)
+endif
+
+# Continuous integration
+ci: init
+	go mod tidy -v
 
 # Run application
 run:
 	air
-
-# Update dependencies
-deps:
-	go mod tidy -v
 
 # Show this help
 help:
