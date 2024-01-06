@@ -2,9 +2,9 @@ all: help
 
 # Run application
 run:
-	go run ./...
+	air
 
-# Uptade dependencies
+# Update dependencies
 deps:
 	go mod tidy -v
 
