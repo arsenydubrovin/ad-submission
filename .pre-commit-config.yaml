@@ -8,4 +8,5 @@ repos:
 -   repo: https://github.com/Bahjat/pre-commit-golang
     rev: v1.0.2
     hooks:
-    -   id: gofumpt
+    -   id: gofumpt # requires github.com/mvdan/gofumpt
+    -   id: golangci-lint # requires github.com/golangci/golangci-lint
