@@ -14,6 +14,12 @@ ifeq (, $(shell which golangci-lint))
 	go install mvdan.cc/gofumpt@latest
 endif
 
+install-air:
+ifeq (, $(shell which air))
+	echo "Installing air..."
+	go install github.com/cosmtrek/air@latest
+endif
+
 install-pre-commit:
 ifeq (, $(shell which golangci-lint))
 	echo "Installing pre-commit..."
