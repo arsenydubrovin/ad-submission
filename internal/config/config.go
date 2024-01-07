@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	AppEnv       string `env:"APP_ENV" env-default:"prod"`
 	HTTPPort     string `env:"HTTP_PORT" env-default:"8080"`
 	PostgresHost string `env:"POSTGRES_HOST" env-default:"localhost"`
 	PostgresPort string `env:"POSTGRES_PORT" env-default:"5432"`
