@@ -19,7 +19,35 @@ func New(host, port, user, dbName string) (*Storage, error) {
 		return nil, err
 	}
 
-	err = db.Ping()
+	// Create adverts table
+	stmt, err := db.Prepare(`
+	CREATE TABLE IF NOT EXISTS adverts (
+		id SERIAL PRIMARY KEY,
+		title VARCHAR(200) NOT NULL,
+		description VARCHAR(1000),
+		price INT NOT NULL);
+	`)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		return nil, err
+	}
+
+	// Create photo_links table
+	stmt, err = db.Prepare(`
+	CREATE TABLE IF NOT EXISTS photo_links (
+		id SERIAL PRIMARY KEY,
+		link VARCHAR(255) NOT NULL,
+		serial_number INT NOT NULL);
+  `)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = stmt.Exec()
 	if err != nil {
 		return nil, err
 	}
