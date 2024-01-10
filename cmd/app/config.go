@@ -2,30 +2,53 @@ package main
 
 import (
 	"log"
+	"os"
 
-	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
-type config struct {
-	app struct {
-		env      string `env:"APP_ENV" env-default:"prod"` // default prod in more secure
-		httpport string `env:"HTTP_PORT" env-default:"8080"`
+type (
+	config struct {
+		app      app
+		postgres postgres
 	}
+
+	app struct {
+		env      string
+		httpPort string
+	}
+
 	postgres struct {
-		host string `env:"POSTGRES_HOST" env-default:"localhost"`
-		port string `env:"POSTGRES_PORT" env-default:"5432"`
-		user string `env:"POSTGRES_USER" env-default:"postgres"`
-		db   string `env:"POSTGRES_DB" env-default:"postgres"`
+		host string
+		port string
+		user string
+		db   string
+	}
+)
+
+func loadConfig() *config {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file, %s", err)
+	}
+
+	return &config{
+		app: app{
+			env:      getEnv("APP_ENV", "prod"), // default prod in more secure
+			httpPort: getEnv("HTTP_PORT", "8080"),
+		},
+		postgres: postgres{
+			host: getEnv("POSTGRES_HOST", "localhost"),
+			port: getEnv("POSTGRES_PORT", "5432"),
+			user: getEnv("POSTGRES_USER", "postgres"),
+			db:   getEnv("POSTGRES_DB", "postgres"),
+		},
 	}
 }
 
-func loadConfig() *config {
-	var cfg config
-
-	err := cleanenv.ReadConfig(".env", &cfg)
-	if err != nil {
-		log.Fatalf("cannot read .env file: %s", err)
+func getEnv(envVariable, defaultValue string) string {
+	if value, exists := os.LookupEnv(envVariable); exists {
+		return value
 	}
-
-	return &cfg
+	return defaultValue
 }
