@@ -7,7 +7,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 func openDB(host, port, user, dbName string) (*sql.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable", host, port, user, dbName)
 
@@ -24,7 +23,6 @@ func openDB(host, port, user, dbName string) (*sql.DB, error) {
 	return db, nil
 }
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 func prepareDB(db *sql.DB) error {
 	// Create adverts table
 	stmt, err := db.Prepare(`

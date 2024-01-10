@@ -3,23 +3,18 @@ package main
 import (
 	"log/slog"
 	"os"
-
-	"github.com/arsenydubrovin/ad-submission/internal/config"
-	l "github.com/arsenydubrovin/ad-submission/internal/logger"
-	"github.com/arsenydubrovin/ad-submission/internal/storage/postgres"
 )
 
 func main() {
-	cfg := config.Load()
+	cfg := loadConfig()
 
-	log := l.SetupLogger(cfg.AppEnv)
+	log := setupLogger(cfg.app.env)
 	slog.SetDefault(log)
 
-	_, err := postgres.New(cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresDB)
+	_, err := openDB(cfg.postgres.host, cfg.postgres.port, cfg.postgres.user, cfg.postgres.db)
 	if err != nil {
-		log.Error("failed to initialize storage", l.Err(err))
+		log.Error("failed to open database", wrapErr(err))
 		os.Exit(1)
 	}
-
-	log.Info("storage is initialized")
+	log.Info("connection to the database is set")
 }

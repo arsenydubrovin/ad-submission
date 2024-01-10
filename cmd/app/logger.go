@@ -12,7 +12,6 @@ const (
 	envProd = "prod"
 )
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 func setupLogger(env string) *slog.Logger {
 	var logger *slog.Logger
 
@@ -34,7 +33,6 @@ func setupLogger(env string) *slog.Logger {
 	return logger
 }
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 func wrapErr(err error) slog.Attr {
 	return slog.Any("error", err)
 }

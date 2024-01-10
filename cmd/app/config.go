@@ -6,7 +6,6 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 type config struct {
 	app struct {
 		env      string `env:"APP_ENV" env-default:"prod"` // default prod in more secure
@@ -20,7 +19,6 @@ type config struct {
 	}
 }
 
-//lint:ignore U1000 Ignore unused function temporarily for debugging
 func loadConfig() *config {
 	var cfg config
 
