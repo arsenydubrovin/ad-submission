@@ -9,7 +9,11 @@ repos:
     rev: v1.0.2
     hooks:
     -   id: gofumpt # requires github.com/mvdan/gofumpt
+-   repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+    -   id: go-mod-tidy
 -   repo: https://github.com/golangci/golangci-lint
     rev: v1.41.1
     hooks:
-    -   id: golangci-lint
+    -   id: golangci-lint # requires github.com/golangci/golangci-lint
