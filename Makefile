@@ -1,9 +1,9 @@
-.PHONY: init install-gofumpt install-golangci-lint install-precommit ci run help
+.PHONY: init install-gofumpt install-air install-golangci-lint install-precommit ci run help
 
 all: help
 
 # Initialize the repository for development
-init: install-gofumpt install-golangci-lint install-precommit
+init: install-gofumpt install-air install-golangci-lint install-precommit
 ifeq (,$(wildcard .git/hooks/pre-commit))
 	pre-commit install
 endif
@@ -36,11 +36,11 @@ endif
 ci: init
 	go mod tidy -v
 
-# Run linter
+# Lint application
 lint:
 	golangci-lint run ./...
 
-# Run application
+# Start live reload with air
 run:
 	air
 
