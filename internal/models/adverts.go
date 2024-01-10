@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type Advert struct {
@@ -19,44 +21,20 @@ type AdvertModel struct {
 	DB *sql.DB
 }
 
-func (am *AdvertModel) Insert(advert *Advert) (id int, err error) {
-	tx, err := am.DB.Begin()
-	if err != nil {
-		return 0, err
+// Insert() method modifies the Advert structure by writing Id and CreatedAt fields
+func (am *AdvertModel) Insert(advert *Advert) error {
+	stmt := `INSERT INTO adverts (title, description, price, photo_links)
+					 VALUES ($1, $2, $3, $4)
+					 RETURNING id, created_at`
+
+	args := []any{
+		advert.Title,
+		advert.Description,
+		advert.Price,
+		pq.Array(advert.PhotoLinks),
 	}
 
-	defer func() {
-		if err == nil {
-			err = tx.Commit()
-		}
-		_ = tx.Rollback()
-	}()
-
-	err = tx.QueryRow(
-		`INSERT INTO adverts (title, description, price)
-		 VALUES ($1, $2, $3)
-	   RETURNING id`,
-		advert.Title, advert.Description, advert.Price).Scan(&id)
-	if err != nil {
-		return 0, err
-	}
-
-	stmt, err := tx.Prepare(`INSERT INTO photo_links (link, serial_number, advert_id)
-													 VALUES ($1, $2, $3)
-												 `)
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	for i, link := range advert.PhotoLinks {
-		_, err = stmt.Exec(link, i+1, id)
-		if err != nil {
-			return 0, err
-		}
-	}
-
-	return id, nil
+	return am.DB.QueryRow(stmt, args...).Scan(&advert.Id, &advert.CreatedAt)
 }
 
 func (am *AdvertModel) Get(id int) (*Advert, error) {
