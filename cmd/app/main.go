@@ -39,4 +39,11 @@ func main() {
 		os.Exit(1)
 	}
 	log.Info("advert is inserted", slog.Int("id", advert.Id))
+
+	ad, err := md.Adverts.Get(18)
+	if err != nil {
+		log.Error("failed to fetch advert", wrapErr(err))
+		os.Exit(1)
+	}
+	log.Info("advert is fetched", slog.String("title", ad.Title))
 }

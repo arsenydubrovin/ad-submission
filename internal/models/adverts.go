@@ -42,17 +42,18 @@ func (am *AdvertModel) Get(id int) (*Advert, error) {
 		return nil, ErrRecordNotFound
 	}
 
-	var advert Advert
-
-	stmt := `SELECT id, title, description, price, created_at
+	stmt := `SELECT id, title, description, price, photo_links, created_at
 					 FROM adverts
 					 WHERE id = $1`
+
+	var advert Advert
 
 	err := am.DB.QueryRow(stmt, id).Scan(
 		&advert.Id,
 		&advert.Title,
 		&advert.Description,
 		&advert.Price,
+		pq.Array(&advert.PhotoLinks),
 		&advert.CreatedAt,
 	)
 	if err != nil {
@@ -63,34 +64,6 @@ func (am *AdvertModel) Get(id int) (*Advert, error) {
 			return nil, err
 		}
 	}
-
-	var photoLinks []string
-
-	stmt = `SELECT link
-				  FROM photo_links
-				  WHERE advert_id = $1
-				  ORDER BY serial_number`
-
-	rows, err := am.DB.Query(stmt, advert.Id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var link string
-		err := rows.Scan(&link)
-		if err != nil {
-			return nil, err
-		}
-		photoLinks = append(photoLinks, link)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	advert.PhotoLinks = photoLinks
 
 	return &advert, nil
 }
