@@ -1,4 +1,4 @@
-package logger
+package main
 
 import (
 	"log/slog"
@@ -12,7 +12,8 @@ const (
 	envProd = "prod"
 )
 
-func SetupLogger(env string) *slog.Logger {
+//lint:ignore U1000 Ignore unused function temporarily for debugging
+func setupLogger(env string) *slog.Logger {
 	var logger *slog.Logger
 
 	switch env {
@@ -27,13 +28,13 @@ func SetupLogger(env string) *slog.Logger {
 	default:
 		logger = slog.New(
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
-		)
+		) // prod logger by default increases security
 	}
 
 	return logger
 }
 
-// wrap error
-func Err(err error) slog.Attr {
+//lint:ignore U1000 Ignore unused function temporarily for debugging
+func wrapErr(err error) slog.Attr {
 	return slog.Any("error", err)
 }
