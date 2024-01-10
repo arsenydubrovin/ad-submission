@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/phsym/console-slog"
+	console "github.com/phsym/console-slog"
 )
 
 const (
