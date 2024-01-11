@@ -10,8 +10,9 @@ ci: init
 lint:
 	golangci-lint run ./...
 
-# Start live reload with air
+# Run application and database container
 run:
+	docker compose up -d postgres
 	air
 
 # Initialize the repository for development
