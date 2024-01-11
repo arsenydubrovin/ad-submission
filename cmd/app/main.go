@@ -46,4 +46,11 @@ func main() {
 		os.Exit(1)
 	}
 	log.Info("advert is fetched", slog.String("title", ad.Title))
+
+	ads, err := md.Adverts.GetAll()
+	if err != nil {
+		log.Error("failed to fetch all adverts", wrapErr(err))
+		os.Exit(1)
+	}
+	log.Info("all adverts are fetched", slog.Int("count", len(ads)))
 }

@@ -67,3 +67,41 @@ func (am *AdvertModel) Get(id int) (*Advert, error) {
 
 	return &advert, nil
 }
+
+func (am *AdvertModel) GetAll() ([]*Advert, error) {
+	stmt := `SELECT id, title, description, price, photo_links, created_at
+					 FROM adverts
+					 ORDER BY id`
+
+	rows, err := am.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	adverts := []*Advert{}
+
+	for rows.Next() {
+		var advert Advert
+
+		err := rows.Scan(
+			&advert.Id,
+			&advert.Title,
+			&advert.Description,
+			&advert.Price,
+			pq.Array(&advert.PhotoLinks),
+			&advert.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		adverts = append(adverts, &advert)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return adverts, nil
+}
