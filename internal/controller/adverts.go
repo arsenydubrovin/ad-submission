@@ -62,11 +62,19 @@ func (c *Controller) fetchAdvertHandler(ctx echo.Context) error {
 }
 
 func (c *Controller) listAdvertsHandler(ctx echo.Context) error {
-	// TODO:
-	// add filters (sort and page)
-	// add filters validation
+	var filters models.Filters
 
-	adverts, err := c.models.Adverts.GetAll()
+	v := validator.New()
+
+	filters.Page = readParamInt(ctx, "page", 1, v)
+	filters.PageSize = readParamInt(ctx, "page_size", 10, v)
+	filters.Sort = readParamString(ctx, "sort", "id")
+
+	if models.ValidateFilters(v, filters); !v.Valid() {
+		return c.failedValidationResponse(ctx, v.Errors)
+	}
+
+	adverts, err := c.models.Adverts.GetAll(filters)
 	if err != nil {
 		return c.serverErrorResponse(ctx, err)
 	}

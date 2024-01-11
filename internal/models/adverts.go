@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/arsenydubrovin/ad-submission/internal/validator"
@@ -86,12 +87,16 @@ func (am *AdvertModel) Get(id int) (*Advert, error) {
 	return &advert, nil
 }
 
-func (am *AdvertModel) GetAll() ([]*Advert, error) {
-	stmt := `SELECT id, title, description, price, photo_links, created_at
+func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, error) {
+	stmt := fmt.Sprintf(`SELECT id, title, description, price, photo_links, created_at as date
 					 FROM adverts
-					 ORDER BY id`
+					 ORDER BY %s %s, id ASC
+					 LIMIT $1 OFFSET $2`,
+		filters.sortColumn(),
+		filters.sortDirection())
 
-	rows, err := am.DB.Query(stmt)
+	fmt.Println("limit", filters.limit(), "offset", filters.offset())
+	rows, err := am.DB.Query(stmt, filters.limit(), filters.offset())
 	if err != nil {
 		return nil, err
 	}
