@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/arsenydubrovin/ad-submission/internal/validator"
 	"github.com/lib/pq"
 )
 
@@ -15,6 +16,23 @@ type Advert struct {
 	PhotoLinks  []string  `json:"photoLinks"`
 	Price       int       `json:"price"`
 	CreatedAt   time.Time `json:"-"`
+}
+
+func ValidateAdvert(v *validator.Validator, advert *Advert) {
+	v.Check(advert.Title != "", "title", "must be provided")
+	v.Check(len([]rune(advert.Title)) <= 200, "title", "must be no more than 200 characters")
+
+	// description can be empty
+	v.Check(len([]rune(advert.Description)) <= 1000, "description", "must be no more than 1000 characters")
+
+	v.Check(advert.PhotoLinks != nil, "photoLinks", "must be provided")
+	for _, link := range advert.PhotoLinks {
+		v.Check(link != "", "links", "must be non-empty")
+	}
+	v.Check(len(advert.PhotoLinks) >= 1, "photoLinks", "must contain at least 1 link")
+	v.Check(len(advert.PhotoLinks) <= 3, "photoLinks", "must contain no more than 3 links")
+
+	v.Check(advert.Price > 0, "price", "must be positive")
 }
 
 type AdvertModel struct {

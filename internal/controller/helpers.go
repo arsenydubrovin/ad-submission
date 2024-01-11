@@ -7,9 +7,6 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
-// TODO:
-// failedValidationResponse
-
 type envelope map[string]any
 
 func (c *Controller) errorResponse(ctx echo.Context, status int, mgs any) error {
@@ -30,4 +27,8 @@ func (c *Controller) badRequestResponse(ctx echo.Context, err error) error {
 func (c *Controller) notFoundResponse(ctx echo.Context) error {
 	msg := "the requested resource was not found"
 	return c.errorResponse(ctx, http.StatusNotFound, msg)
+}
+
+func (c *Controller) failedValidationResponse(ctx echo.Context, errors map[string]string) error {
+	return c.errorResponse(ctx, http.StatusUnprocessableEntity, errors)
 }

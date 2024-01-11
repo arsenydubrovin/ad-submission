@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/arsenydubrovin/ad-submission/internal/models"
+	"github.com/arsenydubrovin/ad-submission/internal/validator"
 	echo "github.com/labstack/echo/v4"
 )
 
@@ -28,7 +29,11 @@ func (c *Controller) createAdvertHandler(ctx echo.Context) error {
 		PhotoLinks:  input.PhotoLinks,
 	}
 
-	// TODO: validate advert
+	v := validator.New()
+
+	if models.ValidateAdvert(v, advert); !v.Valid() {
+		return c.failedValidationResponse(ctx, v.Errors)
+	}
 
 	if err := c.models.Adverts.Insert(advert); err != nil {
 		return c.serverErrorResponse(ctx, err)
