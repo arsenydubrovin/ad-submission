@@ -18,7 +18,7 @@ func setupLogger(env string) *slog.Logger {
 	switch env {
 	case envDev:
 		logger = slog.New(
-			console.NewHandler(os.Stderr, &console.HandlerOptions{Level: slog.LevelDebug, AddSource: true}),
+			console.NewHandler(os.Stderr, &console.HandlerOptions{Level: slog.LevelDebug}),
 		)
 	case envProd:
 		logger = slog.New(

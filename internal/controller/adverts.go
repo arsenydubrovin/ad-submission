@@ -18,7 +18,7 @@ func (c *Controller) createAdvertHandler(ctx echo.Context) error {
 	}
 
 	if err := ctx.Bind(&input); err != nil {
-		return ctx.JSON(http.StatusBadRequest, envelope{"error": "invalid request payload"})
+		return c.badRequestResponse(ctx, err)
 	}
 
 	advert := &models.Advert{
@@ -31,46 +31,39 @@ func (c *Controller) createAdvertHandler(ctx echo.Context) error {
 	// TODO: validate advert
 
 	if err := c.models.Adverts.Insert(advert); err != nil {
-		// TODO: custom errResponse()
-		return ctx.JSON(http.StatusInternalServerError, envelope{"error": "failed to insert advert"})
+		return c.serverErrorResponse(ctx, err)
 	}
 
-	// TODO: custom writeJSON()
 	return ctx.JSON(http.StatusCreated, envelope{"advert": advert})
 }
 
 func (c *Controller) fetchAdvertHandler(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		// TODO: custom errResponse()
-		return ctx.JSON(http.StatusNotFound, envelope{"error": "failed to parse id parameter"})
+		return c.notFoundResponse(ctx)
 	}
 
 	advert, err := c.models.Adverts.Get(id)
 	if err != nil {
-		if err != nil {
-			switch {
-			case errors.Is(err, models.ErrRecordNotFound):
-				// TODO: custom errResponse()
-				return ctx.JSON(http.StatusNotFound, envelope{"error": "advert not found"})
-			default:
-				// TODO: custom errResponse()
-				return ctx.JSON(http.StatusInternalServerError, envelope{"error": "failed to fetch advert"})
-			}
+		switch {
+		case errors.Is(err, models.ErrRecordNotFound):
+			return c.notFoundResponse(ctx)
+		default:
+			return c.serverErrorResponse(ctx, err)
 		}
 	}
 
-	// TODO: custom writeJSON()
-	return ctx.JSON(http.StatusCreated, envelope{"advert": advert})
+	return ctx.JSON(http.StatusOK, envelope{"advert": advert})
 }
 
 func (c *Controller) listAdvertsHandler(ctx echo.Context) error {
-	// TODO: filters (sort and page)
+	// TODO:
+	// add filters (sort and page)
+	// add filters validation
 
 	adverts, err := c.models.Adverts.GetAll()
 	if err != nil {
-		// TODO: custom errResponse()
-		return ctx.JSON(http.StatusInternalServerError, envelope{"error": "failed to list advert"})
+		return c.serverErrorResponse(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, envelope{"number": len(adverts), "adverts": adverts})
