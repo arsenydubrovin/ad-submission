@@ -33,6 +33,7 @@ func main() {
 
 	ctrl := controller.New(e, &md)
 	ctrl.RegisterRoutes()
+	log.Info("controller is initialized")
 
 	err = ctrl.Serve(cfg.app.httpPort)
 	if err != nil {
