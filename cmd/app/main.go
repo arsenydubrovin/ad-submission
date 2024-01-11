@@ -4,7 +4,10 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/arsenydubrovin/ad-submission/internal/controller"
 	"github.com/arsenydubrovin/ad-submission/internal/models"
+	echo "github.com/labstack/echo/v4"
+	slogecho "github.com/samber/slog-echo"
 )
 
 func main() {
@@ -22,35 +25,18 @@ func main() {
 
 	md := models.New(db)
 
-	advert := &models.Advert{
-		Title:       "Фотик",
-		Price:       456,
-		Description: "Зачётный пленочный фотки «Зенит». Достался от деда»",
-		PhotoLinks: []string{
-			"фотка 1",
-			"фотка 2",
-			"фотка 3",
-		},
-	}
+	e := echo.New()
+	e.Use(slogecho.NewWithConfig(log,
+		slogecho.Config{
+			WithRequestBody: true,
+		}))
 
-	err = md.Adverts.Insert(advert)
+	ctrl := controller.New(e, &md)
+	ctrl.RegisterRoutes()
+
+	err = ctrl.Serve(cfg.app.httpPort)
 	if err != nil {
-		log.Error("failed to insert advert", wrapErr(err))
+		log.Error("failed to start server", wrapErr(err))
 		os.Exit(1)
 	}
-	log.Info("advert is inserted", slog.Int("id", advert.Id))
-
-	ad, err := md.Adverts.Get(18)
-	if err != nil {
-		log.Error("failed to fetch advert", wrapErr(err))
-		os.Exit(1)
-	}
-	log.Info("advert is fetched", slog.String("title", ad.Title))
-
-	ads, err := md.Adverts.GetAll()
-	if err != nil {
-		log.Error("failed to fetch all adverts", wrapErr(err))
-		os.Exit(1)
-	}
-	log.Info("all adverts are fetched", slog.Int("count", len(ads)))
 }

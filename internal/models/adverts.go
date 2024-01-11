@@ -12,7 +12,7 @@ type Advert struct {
 	Id          int       `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	PhotoLinks  []string  `json:"photolinks"`
+	PhotoLinks  []string  `json:"photoLinks"`
 	Price       int       `json:"price"`
 	CreatedAt   time.Time `json:"-"`
 }
