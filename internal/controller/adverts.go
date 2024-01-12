@@ -88,10 +88,10 @@ func (c *Controller) listAdvertsHandler(ctx echo.Context) error {
 		return c.failedValidationResponse(ctx, v.Errors)
 	}
 
-	adverts, err := c.models.Adverts.GetAll(filters)
+	adverts, info, err := c.models.Adverts.GetAll(filters)
 	if err != nil {
 		return c.serverErrorResponse(ctx, err)
 	}
 
-	return ctx.JSON(http.StatusOK, envelope{"number": len(adverts), "adverts": adverts})
+	return ctx.JSON(http.StatusOK, envelope{"adverts": adverts, "info": info})
 }

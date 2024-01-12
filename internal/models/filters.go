@@ -1,6 +1,7 @@
 package models
 
 import (
+	"math"
 	"strings"
 
 	"github.com/arsenydubrovin/ad-submission/internal/validator"
@@ -82,4 +83,20 @@ func (f *Filters) includeAllPhotos() bool {
 		}
 	}
 	return false
+}
+
+type Info struct {
+	CurrentPage  int `json:"currentPage,omitempty"`
+	PageSize     int `json:"pageSize,omitempty"`
+	FirstPage    int `json:"firstPage,omitempty"`
+	LastPage     int `json:"lastPage,omitempty"`
+	TotalRecords int `json:"totalRecords,omitempty"`
+}
+
+func (i *Info) calculate() {
+	if i.TotalRecords == 0 {
+		i = nil
+	}
+	i.FirstPage = 1
+	i.LastPage = int(math.Ceil(float64(i.TotalRecords) / float64(i.PageSize)))
 }
