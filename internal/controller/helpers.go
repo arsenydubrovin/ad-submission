@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/arsenydubrovin/ad-submission/internal/validator"
 	echo "github.com/labstack/echo/v4"
@@ -33,4 +34,14 @@ func readParamString(ctx echo.Context, key string, defaultValue string) string {
 	}
 
 	return p
+}
+
+func readParamCSV(ctx echo.Context, key string, defaultValue []string) []string {
+	p := ctx.QueryParam(key)
+
+	if p == "" {
+		return defaultValue
+	}
+
+	return strings.Split(p, ",")
 }

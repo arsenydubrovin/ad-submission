@@ -68,9 +68,12 @@ func (c *Controller) listAdvertsHandler(ctx echo.Context) error {
 
 	filters.Page = readParamInt(ctx, "page", 1, v)
 	filters.PageSize = readParamInt(ctx, "page_size", 10, v)
-	filters.Sort = readParamString(ctx, "sort", "id")
+	models.ValidatePagination(v, filters)
 
-	if models.ValidateFilters(v, filters); !v.Valid() {
+	filters.Sort = readParamString(ctx, "sort", "id")
+	models.ValidateSorting(v, filters)
+
+	if !v.Valid() {
 		return c.failedValidationResponse(ctx, v.Errors)
 	}
 
