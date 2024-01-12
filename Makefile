@@ -1,4 +1,4 @@
-.PHONY: init install-gofumpt install-air install-golangci-lint install-pymarkdown install-precommit ci run help docker-build docker-run
+.PHONY: init install-gofumpt install-air install-golangci-lint install-precommit ci run help docker-build docker-run
 
 all: help
 
@@ -25,7 +25,7 @@ docker-run:
 	docker-compose up -d
 
 # Initialize the repository for development
-init: install-gofumpt install-air install-golangci-lint install-precommit install-pymarkdown
+init: install-gofumpt install-air install-golangci-lint install-precommit
 ifeq (,$(wildcard .git/hooks/pre-commit))
 	pre-commit install
 endif
@@ -52,12 +52,6 @@ install-golangci-lint:
 ifeq (, $(shell which golangci-lint))
 	echo "Installing golangci-lint..."
 	$(shell curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin v1.55.2)
-endif
-
-install-pymarkdown:
-ifeq (, $(shell which pymarkdown))
-	echo "Installing pymarkdown..."
-	python3 -m pip install pymarkdownlnt
 endif
 
 # Show this help

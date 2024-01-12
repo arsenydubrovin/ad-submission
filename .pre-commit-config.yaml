@@ -17,7 +17,3 @@ repos:
     rev: v1.41.1
     hooks:
     -   id: golangci-lint # requires github.com/golangci/golangci-lint
--   repo: https://github.com/jackdewinter/pymarkdown
-    rev: v0.9.11
-    hooks:
-    -   id: pymarkdown # requires github.com/jackdewinter/pymarkdown
