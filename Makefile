@@ -1,19 +1,27 @@
-.PHONY: init install-gofumpt install-air install-golangci-lint install-pymarkdown install-precommit ci run help
+.PHONY: init install-gofumpt install-air install-golangci-lint install-pymarkdown install-precommit ci run help docker-build docker-run
 
 all: help
 
-# Continuous integration
-ci: init
+# Update dependencies
+deps: init
 	go mod tidy -v
 
-# Lint application
+# Lint the application
 lint:
 	golangci-lint run ./...
 
-# Run application and database container
+# Run the application and the database container
 run:
 	docker compose up -d postgres
 	air
+
+# Build docker image
+docker-build:
+	docker build -t ad-submission .
+
+# Run the application in Docker with docker-compose
+docker-run:
+	docker-compose up -d
 
 # Initialize the repository for development
 init: install-gofumpt install-air install-golangci-lint install-precommit install-pymarkdown

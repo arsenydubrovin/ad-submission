@@ -7,3 +7,18 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+
+  backend:
+    image: ad-submission
+    command: wait-for-it postgres:5432 -- /bin/sh -c "./ad-submission"
+    ports:
+      - 1337:1337
+    environment:
+      - APP_ENV=prod
+      - HTTP_PORT=1337
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    links:
+      - postgres
