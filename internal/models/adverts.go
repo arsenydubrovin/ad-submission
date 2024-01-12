@@ -11,12 +11,13 @@ import (
 )
 
 type Advert struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	PhotoLinks  []string  `json:"photoLinks"`
-	Price       int       `json:"price"`
-	CreatedAt   time.Time `json:"-"`
+	Id               int       `json:"id"`
+	Title            string    `json:"title"`
+	Description      string    `json:"description,omitempty"`
+	PrimaryPhotoLink string    `json:"primaryPhotoLink"`
+	PhotoLinks       []string  `json:"photoLinks,omitempty"`
+	Price            int       `json:"price"`
+	CreatedAt        time.Time `json:"-"`
 }
 
 func ValidateAdvert(v *validator.Validator, advert *Advert) {
@@ -56,24 +57,28 @@ func (am *AdvertModel) Insert(advert *Advert) error {
 	return am.DB.QueryRow(stmt, args...).Scan(&advert.Id, &advert.CreatedAt)
 }
 
-func (am *AdvertModel) Get(id int) (*Advert, error) {
+func (am *AdvertModel) Get(id int, filters Filters) (*Advert, error) {
 	if id < 1 {
 		return nil, ErrRecordNotFound
 	}
 
-	stmt := `SELECT id, title, description, price, photo_links, created_at
+	stmt := `SELECT id, title, price, created_at, description, photo_links
 					 FROM adverts
 					 WHERE id = $1`
 
 	var advert Advert
 
+	// Optional fields
+	var photoLinks []string
+	var description string
+
 	err := am.DB.QueryRow(stmt, id).Scan(
 		&advert.Id,
 		&advert.Title,
-		&advert.Description,
 		&advert.Price,
-		pq.Array(&advert.PhotoLinks),
 		&advert.CreatedAt,
+		&description,
+		pq.Array(&photoLinks),
 	)
 	if err != nil {
 		switch {
@@ -84,11 +89,21 @@ func (am *AdvertModel) Get(id int) (*Advert, error) {
 		}
 	}
 
+	advert.PrimaryPhotoLink = photoLinks[0]
+
+	if filters.includeDescription() {
+		advert.Description = description
+	}
+
+	if filters.includeAllPhotos() {
+		advert.PhotoLinks = photoLinks
+	}
+
 	return &advert, nil
 }
 
 func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, error) {
-	stmt := fmt.Sprintf(`SELECT id, title, description, price, photo_links, created_at as date
+	stmt := fmt.Sprintf(`SELECT id, title, price, photo_links, created_at as date
 					 FROM adverts
 					 ORDER BY %s %s, id ASC
 					 LIMIT $1 OFFSET $2`,
@@ -102,22 +117,24 @@ func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, error) {
 	}
 	defer rows.Close()
 
-	adverts := []*Advert{}
+	var adverts []*Advert
 
 	for rows.Next() {
 		var advert Advert
+		var photoLinks []string
 
 		err := rows.Scan(
 			&advert.Id,
 			&advert.Title,
-			&advert.Description,
 			&advert.Price,
-			pq.Array(&advert.PhotoLinks),
+			pq.Array(&photoLinks),
 			&advert.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		advert.PrimaryPhotoLink = photoLinks[0]
 
 		adverts = append(adverts, &advert)
 	}

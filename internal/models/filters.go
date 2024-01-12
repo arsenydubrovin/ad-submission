@@ -65,3 +65,21 @@ func (f *Filters) limit() int {
 func (f *Filters) offset() int {
 	return f.PageSize * (f.Page - 1)
 }
+
+func (f *Filters) includeDescription() bool {
+	for _, field := range f.Fields {
+		if field == "description" {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *Filters) includeAllPhotos() bool {
+	for _, field := range f.Fields {
+		if field == "allPhotos" {
+			return true
+		}
+	}
+	return false
+}

@@ -48,7 +48,18 @@ func (c *Controller) fetchAdvertHandler(ctx echo.Context) error {
 		return c.notFoundResponse(ctx)
 	}
 
-	advert, err := c.models.Adverts.Get(id)
+	var filters models.Filters
+
+	v := validator.New()
+
+	filters.Fields = readParamCSV(ctx, "fields", nil)
+	models.ValidateFields(v, filters)
+
+	if !v.Valid() {
+		return c.failedValidationResponse(ctx, v.Errors)
+	}
+
+	advert, err := c.models.Adverts.Get(id, filters)
 	if err != nil {
 		switch {
 		case errors.Is(err, models.ErrRecordNotFound):
