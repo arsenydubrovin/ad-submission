@@ -93,10 +93,16 @@ type Info struct {
 	TotalRecords int `json:"totalRecords,omitempty"`
 }
 
-func (i *Info) calculate() {
-	if i.TotalRecords == 0 {
-		i = nil
+func calculateInfo(page, pageSize, totalRecords int) Info {
+	if totalRecords == 0 {
+		return Info{}
 	}
-	i.FirstPage = 1
-	i.LastPage = int(math.Ceil(float64(i.TotalRecords) / float64(i.PageSize)))
+
+	return Info{
+		CurrentPage:  page,
+		PageSize:     pageSize,
+		FirstPage:    1,
+		LastPage:     int(math.Ceil(float64(totalRecords) / float64(pageSize))),
+		TotalRecords: totalRecords,
+	}
 }

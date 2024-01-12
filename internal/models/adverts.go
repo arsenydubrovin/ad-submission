@@ -102,9 +102,7 @@ func (am *AdvertModel) Get(id int, filters Filters) (*Advert, error) {
 	return &advert, nil
 }
 
-func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, *Info, error) {
-	var info Info
-
+func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, Info, error) {
 	stmt := fmt.Sprintf(`SELECT id, title, price, photo_links, created_at as date, count(*) OVER()
 					 FROM adverts
 					 ORDER BY %s %s, id ASC
@@ -115,11 +113,12 @@ func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, *Info, error) {
 	fmt.Println("limit", filters.limit(), "offset", filters.offset())
 	rows, err := am.DB.Query(stmt, filters.limit(), filters.offset())
 	if err != nil {
-		return nil, nil, err
+		return nil, Info{}, err
 	}
 	defer rows.Close()
 
 	var adverts []*Advert
+	var totalRecords int
 
 	for rows.Next() {
 		var advert Advert
@@ -131,10 +130,10 @@ func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, *Info, error) {
 			&advert.Price,
 			pq.Array(&photoLinks),
 			&advert.CreatedAt,
-			&info.TotalRecords,
+			&totalRecords,
 		)
 		if err != nil {
-			return nil, nil, err
+			return nil, Info{}, err
 		}
 
 		advert.PrimaryPhotoLink = photoLinks[0]
@@ -143,12 +142,10 @@ func (am *AdvertModel) GetAll(filters Filters) ([]*Advert, *Info, error) {
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, nil, err
+		return nil, Info{}, err
 	}
 
-	info.CurrentPage = filters.Page
-	info.PageSize = filters.PageSize
-	info.calculate()
+	info := calculateInfo(filters.Page, filters.PageSize, totalRecords)
 
-	return adverts, &info, nil
+	return adverts, info, nil
 }
