@@ -6,9 +6,10 @@ all: help
 deps: init
 	go mod tidy -v
 
-# Lint the application
+# Lint the project
 lint:
 	golangci-lint run ./...
+	pymarkdown
 
 # Run the application and the database container
 run:
