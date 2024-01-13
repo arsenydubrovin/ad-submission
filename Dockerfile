@@ -9,6 +9,6 @@ RUN apt update && \
 COPY ./ ./
 
 RUN go mod download
-RUN GOOS=linux go build -o ad-submission ./cmd/app
+RUN GOOS=linux go build -o ad-submission ./src/cmd/app
 
 CMD ["./ad-submission"]

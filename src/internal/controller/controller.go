@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/arsenydubrovin/ad-submission/internal/models"
+	"github.com/arsenydubrovin/ad-submission/src/internal/models"
 	echo "github.com/labstack/echo/v4"
 )
 

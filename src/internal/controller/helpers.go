@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/arsenydubrovin/ad-submission/internal/validator"
+	"github.com/arsenydubrovin/ad-submission/src/internal/validator"
 	echo "github.com/labstack/echo/v4"
 )
 

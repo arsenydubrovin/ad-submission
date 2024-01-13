@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/arsenydubrovin/ad-submission/internal/models"
-	"github.com/arsenydubrovin/ad-submission/internal/validator"
+	"github.com/arsenydubrovin/ad-submission/src/internal/models"
+	"github.com/arsenydubrovin/ad-submission/src/internal/validator"
 	echo "github.com/labstack/echo/v4"
 )
 

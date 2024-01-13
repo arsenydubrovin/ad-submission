@@ -8,8 +8,7 @@ deps: init
 
 # Lint the project
 lint:
-	golangci-lint run ./...
-	pymarkdown
+	golangci-lint run ./src/...
 
 # Run the application and the database container
 run:
