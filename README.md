@@ -61,6 +61,12 @@ HTTP метод: `GET /adverts`
 
 ## Запуск в Docker
 
+Создайте .env:
+
+```
+mv .env.example .env
+```
+
 Соберите образ:
 
 ```bash
@@ -79,6 +85,12 @@ make docker-run
 
 ```bash
 make init
+```
+
+Создайте .env:
+
+```
+mv .env.example .env
 ```
 
 Запустите контейнер с PostgresSQL и приложение в live-режиме:
