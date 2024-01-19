@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/arsenydubrovin/ad-submission/src/internal/config"
 	"github.com/arsenydubrovin/ad-submission/src/internal/controller"
 	"github.com/arsenydubrovin/ad-submission/src/internal/models"
 	echo "github.com/labstack/echo/v4"
@@ -11,12 +12,27 @@ import (
 )
 
 func main() {
-	cfg := loadConfig()
+	err := config.Load(".env")
+	if err != nil {
+		slog.Error("failed to load config", wrapErr(err))
+		os.Exit(1)
+	}
 
-	log := setupLogger(cfg.app.env)
+	appCfg, err := config.NewApplicationConfig()
+	if err != nil {
+		slog.Error("failed to load application config", wrapErr(err))
+		os.Exit(1)
+	}
+
+	log := setupLogger(appCfg.Env())
 	slog.SetDefault(log)
 
-	db, err := openDB(cfg.postgres.host, cfg.postgres.port, cfg.postgres.user, cfg.postgres.db)
+	dbCfg, err := config.NewPostgresConfig()
+	if err != nil {
+		log.Error("failed to load database config", wrapErr(err))
+		os.Exit(1)
+	}
+	db, err := openDB(dbCfg.DSN())
 	if err != nil {
 		log.Error("failed to open database", wrapErr(err))
 		os.Exit(1)
@@ -35,7 +51,13 @@ func main() {
 	ctrl.RegisterRoutes()
 	log.Info("controller is initialized")
 
-	err = ctrl.Serve(cfg.app.httpPort)
+	httpCfg, err := config.NewHTTPConfig()
+	if err != nil {
+		log.Error("failed to load http server config", wrapErr(err))
+		os.Exit(1)
+	}
+
+	err = ctrl.Serve(httpCfg.Port())
 	if err != nil {
 		log.Error("failed to start server", wrapErr(err))
 		os.Exit(1)
